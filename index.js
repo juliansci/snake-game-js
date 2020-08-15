@@ -5,7 +5,6 @@ const Game = () => {
     UP: 'UP',
     DOWN: 'DOWN',
   };
-
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext("2d");
   const matrixWidth = 30;
@@ -15,15 +14,24 @@ const Game = () => {
   const matrix = createMatrix(matrixWidth, matrixHeight);
   const snake = createSnake();
   let snakeDirection = 'RIGHT';
+  let food = createFood();
 
   function createSnake() {
+    const randomPosition = getRandomPositionAvailable();
+    return [randomPosition];
+  }
+
+  function createFood() {
+    return getRandomPositionAvailable();
+  }
+
+  function getRandomPositionAvailable() {
     const dimensionMatrix = matrix.length;
     const randX = Math.floor(Math.random() * dimensionMatrix);
     const randY = Math.floor(Math.random() * dimensionMatrix);
-    matrix[randX][randY] = 'S';
-    console.log(matrix[randX][randY]);
-    return [[randX, randY]];
+    return [randX, randY];
   }
+
   function createMatrix(m, n) {
     var matrix = [];
     for (var i = 0; i < n; i++) {
@@ -31,7 +39,6 @@ const Game = () => {
     }
     return matrix;
   }
-
 
   function drawScenary() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -72,12 +79,11 @@ const Game = () => {
         ctx.fillRect(x + widthBlock - eyeDimension - marginToHead, y + marginSecondEye, eyeDimension, eyeDimension);
         break;
     }
-
-
   }
+
   function drawSnake() {
-    ctx.fillStyle = "#F66B00";
     for (let i = 0; i < snake.length; i++) {
+      ctx.fillStyle = "#F66B00";
       const snakeBlock = snake[i];
       ctx.fillRect(snakeBlock[0] * widthBlock, snakeBlock[1] * heightBlock, widthBlock, heightBlock);
       if (i === 0) {
@@ -85,59 +91,108 @@ const Game = () => {
       }
     }
   }
+
+  function drawFood() {
+    ctx.fillStyle = "green";
+    ctx.fillRect(food[0] * widthBlock, food[1] * heightBlock, widthBlock, heightBlock);
+  }
+
   function drawGame() {
     drawScenary();
     drawSnake();
+    drawFood();
+  }
+
+  function snakeMoveHead(snakeHead) {
+    switch (snakeDirection) {
+      case SNAKE_DIRECTIONS.UP:
+        if (snakeHead[1] > 0) {
+          snakeHead[1] -= 1;
+        } else {
+          snakeHead[1] = matrixHeight - 1;
+        }
+        break;
+      case SNAKE_DIRECTIONS.DOWN:
+        if (snakeHead[1] < matrixHeight - 1) {
+          snakeHead[1] += 1;
+        } else {
+          snakeHead[1] = 0;
+        }
+        break;
+      case SNAKE_DIRECTIONS.LEFT:
+        if (snakeHead[0] > 0) {
+          snakeHead[0] -= 1;
+        } else {
+          snakeHead[0] = matrixWidth - 1;
+        }
+        break;
+      case SNAKE_DIRECTIONS.RIGHT:
+        if (snakeHead[0] < matrixWidth - 1) {
+          snakeHead[0] += 1;
+        } else {
+          snakeHead[0] = 0;
+        }
+        break;
+    }
+  }
+
+  function snakeMoveBody(snakeBlock, snakeNextBlock) {
+    snakeBlock[0] = snakeNextBlock[0];
+    snakeBlock[1] = snakeNextBlock[1];
   }
 
   function snakeMove() {
-    console.log(snakeDirection);
-    console.log('snake: ', snake[0], snake[1]);
-    for (let i = 0; i < snake.length; i++) {
+    console.log('snakeMove');
+    for (let i = snake.length - 1; i >= 0; i--) {
       const snakeBlock = snake[i];
-      switch (snakeDirection) {
-        case SNAKE_DIRECTIONS.UP:
-          if (snakeBlock[1] > 0) {
-            snakeBlock[1] -= 1;
-          } else {
-            snakeBlock[1] = matrixHeight - 1;
-          }
-          break;
-        case SNAKE_DIRECTIONS.DOWN:
-          if (snakeBlock[1] < matrixHeight - 1) {
-            snakeBlock[1] += 1;
-          } else {
-            snakeBlock[1] = 0;
-          }
-          break;
-        case SNAKE_DIRECTIONS.LEFT:
-          if (snakeBlock[0] > 0) {
-            snakeBlock[0] -= 1;
-          } else {
-            snakeBlock[0] = matrixWidth - 1;
-          }
-          break;
-        case SNAKE_DIRECTIONS.RIGHT:
-          if (snakeBlock[0] < matrixWidth - 1) {
-            snakeBlock[0] += 1;
-          } else {
-            snakeBlock[0] = 0;
-          }
-          break;
+      if (i === 0) {
+        snakeMoveHead(snakeBlock);
+      } else {
+        const snakeNextBlock = snake[i - 1];
+        snakeMoveBody(snakeBlock, snakeNextBlock);
       }
-
     }
   }
+
+  function growSnake() {
+    snakeTail = snake[snake.length - 1];
+    switch (snakeDirection) {
+      case SNAKE_DIRECTIONS.UP:
+        snake.push([snakeTail[0], snakeTail[1] + 1]);
+        break;
+      case SNAKE_DIRECTIONS.DOWN:
+        snake.push([snakeTail[0], snakeTail[1] - 1]);
+
+        break;
+      case SNAKE_DIRECTIONS.LEFT:
+        snake.push([snakeTail[0] + 1, snakeTail[1]]);
+
+        break;
+      case SNAKE_DIRECTIONS.RIGHT:
+        snake.push([snakeTail[0] - 1, snakeTail[1]]);
+        break;
+    }
+    console.log(snake);
+  }
+
+  function checkSnakeEat() {
+    const snakeHead = snake[0];
+    if (snakeHead[0] === food[0] && snakeHead[1] === food[1]) {
+      console.log('come!');
+      growSnake();
+      food = createFood();
+    }
+  }
+
   function animate() {
     snakeMove();
+    checkSnakeEat();
     drawGame();
-
   }
 
   function handleKeyEvent() {
     document.onkeydown = function (e) {
       e = e || window.event;
-      console.log(e);
       switch (e.code) {
         case 'ArrowUp':
           snakeDirection = SNAKE_DIRECTIONS.UP;
@@ -167,10 +222,10 @@ const Game = () => {
       }
     };
   }
+
   function start() {
-    console.log('starting game!');
     drawGame();
-    setInterval(animate, 200);
+    setInterval(animate, 100);
     handleKeyEvent();
   }
 
