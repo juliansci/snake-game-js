@@ -12,10 +12,11 @@ const Game = () => {
   const widthBlock = canvas.width / matrixWidth;
   const heightBlock = canvas.height / matrixHeight;
   const matrix = createMatrix(matrixWidth, matrixHeight);
-  const snake = createSnake();
+  let snake = [];
+  let food = [];
   let snakeDirection = 'RIGHT';
-  let food = createFood();
-
+  let intervalAnimation = null;
+  let snakeIsDead = false;
   function createSnake() {
     const randomPosition = getRandomPositionAvailable();
     return [randomPosition];
@@ -27,8 +28,15 @@ const Game = () => {
 
   function getRandomPositionAvailable() {
     const dimensionMatrix = matrix.length;
-    const randX = Math.floor(Math.random() * dimensionMatrix);
-    const randY = Math.floor(Math.random() * dimensionMatrix);
+    let blocksUsed = [...snake, food];
+    let randX = 0;
+    let randY = 0;
+    let blockIsUsed = false;
+    do {
+      randX = Math.floor(Math.random() * dimensionMatrix);
+      randY = Math.floor(Math.random() * dimensionMatrix);
+      blockIsUsed = blocksUsed.find(block => block[0] === randX && block[1] === randY);
+    } while (blockIsUsed);
     return [randX, randY];
   }
 
@@ -55,12 +63,15 @@ const Game = () => {
   }
 
   function drawSnakeHead(x, y) {
-    ctx.fillStyle = "#000000";
     const eyeDimension = 0.15 * widthBlock;
     const marginBetweenEyes = 0.1 * widthBlock;
     const marginFirstEye = 0.3 * widthBlock;
     const marginSecondEye = marginFirstEye + eyeDimension + marginBetweenEyes;
     const marginToHead = 0.1 * widthBlock;
+
+    ctx.fillStyle = "#C95903";
+    ctx.fillRect(x, y, widthBlock, heightBlock);
+    ctx.fillStyle = snakeIsDead ? "#EB1414" : "#000000";
     switch (snakeDirection) {
       case SNAKE_DIRECTIONS.UP:
         ctx.fillRect(x + marginFirstEye, y + marginToHead, eyeDimension, eyeDimension);
@@ -82,7 +93,7 @@ const Game = () => {
   }
 
   function drawSnake() {
-    for (let i = 0; i < snake.length; i++) {
+    for (let i = snake.length - 1; i >= 0; i--) {
       ctx.fillStyle = "#F66B00";
       const snakeBlock = snake[i];
       ctx.fillRect(snakeBlock[0] * widthBlock, snakeBlock[1] * heightBlock, widthBlock, heightBlock);
@@ -178,14 +189,33 @@ const Game = () => {
   function checkSnakeEat() {
     const snakeHead = snake[0];
     if (snakeHead[0] === food[0] && snakeHead[1] === food[1]) {
-      console.log('come!');
       growSnake();
       food = createFood();
     }
   }
+  function checkSnakeColission() {
+    if (snake.length <= 1) return false;
+    const snakeHead = snake[0];
+    for (let i = 1; i < snake.length; i++) {
+      const snakeBlock = snake[i];
+      if (snakeHead[0] === snakeBlock[0] && snakeHead[1] === snakeBlock[1]) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   function animate() {
     snakeMove();
+    const snakeColission = checkSnakeColission();
+    if (snakeColission) {
+      clearInterval(intervalAnimation);
+      console.log(snake);
+      snakeIsDead = true;
+      drawGame();
+
+      console.log('Perdiste!');
+    }
     checkSnakeEat();
     drawGame();
   }
@@ -195,28 +225,44 @@ const Game = () => {
       e = e || window.event;
       switch (e.code) {
         case 'ArrowUp':
-          snakeDirection = SNAKE_DIRECTIONS.UP;
+          if (snakeDirection !== SNAKE_DIRECTIONS.DOWN) {
+            snakeDirection = SNAKE_DIRECTIONS.UP;
+          }
           break;
         case 'KeyW':
-          snakeDirection = SNAKE_DIRECTIONS.UP;
+          if (snakeDirection !== SNAKE_DIRECTIONS.DOWN) {
+            snakeDirection = SNAKE_DIRECTIONS.UP;
+          }
           break;
         case 'ArrowDown':
-          snakeDirection = SNAKE_DIRECTIONS.DOWN;
+          if (snakeDirection !== SNAKE_DIRECTIONS.UP) {
+            snakeDirection = SNAKE_DIRECTIONS.DOWN;
+          }
           break;
         case 'KeyS':
-          snakeDirection = SNAKE_DIRECTIONS.DOWN;
+          if (snakeDirection !== SNAKE_DIRECTIONS.UP) {
+            snakeDirection = SNAKE_DIRECTIONS.DOWN;
+          }
           break;
         case 'ArrowLeft':
-          snakeDirection = SNAKE_DIRECTIONS.LEFT;
+          if (snakeDirection !== SNAKE_DIRECTIONS.RIGHT) {
+            snakeDirection = SNAKE_DIRECTIONS.LEFT;
+          }
           break;
         case 'KeyA':
-          snakeDirection = SNAKE_DIRECTIONS.LEFT;
+          if (snakeDirection !== SNAKE_DIRECTIONS.RIGHT) {
+            snakeDirection = SNAKE_DIRECTIONS.LEFT;
+          }
           break;
         case 'ArrowRight':
-          snakeDirection = SNAKE_DIRECTIONS.RIGHT;
+          if (snakeDirection !== SNAKE_DIRECTIONS.LEFT) {
+            snakeDirection = SNAKE_DIRECTIONS.RIGHT;
+          }
           break;
         case 'KeyD':
-          snakeDirection = SNAKE_DIRECTIONS.RIGHT;
+          if (snakeDirection !== SNAKE_DIRECTIONS.LEFT) {
+            snakeDirection = SNAKE_DIRECTIONS.RIGHT;
+          }
           break;
 
       }
@@ -224,8 +270,10 @@ const Game = () => {
   }
 
   function start() {
+    snake = createSnake();
+    food = createFood();
     drawGame();
-    setInterval(animate, 100);
+    intervalAnimation = setInterval(animate, 150);
     handleKeyEvent();
   }
 
