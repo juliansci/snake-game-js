@@ -7,8 +7,8 @@ const Game = () => {
   };
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext("2d");
-  const matrixWidth = 30;
-  const matrixHeight = 30;
+  const matrixWidth = 25;
+  const matrixHeight = 25;
   const widthBlock = canvas.width / matrixWidth;
   const heightBlock = canvas.height / matrixHeight;
   const matrix = createMatrix(matrixWidth, matrixHeight);
@@ -153,7 +153,6 @@ const Game = () => {
   }
 
   function snakeMove() {
-    console.log('snakeMove');
     for (let i = snake.length - 1; i >= 0; i--) {
       const snakeBlock = snake[i];
       if (i === 0) {
@@ -183,7 +182,6 @@ const Game = () => {
         snake.push([snakeTail[0] - 1, snakeTail[1]]);
         break;
     }
-    console.log(snake);
   }
 
   function checkSnakeEat() {
@@ -210,10 +208,8 @@ const Game = () => {
     const snakeColission = checkSnakeColission();
     if (snakeColission) {
       clearInterval(intervalAnimation);
-      console.log(snake);
       snakeIsDead = true;
       drawGame();
-
       console.log('Perdiste!');
     }
     checkSnakeEat();
@@ -273,7 +269,7 @@ const Game = () => {
     snake = createSnake();
     food = createFood();
     drawGame();
-    intervalAnimation = setInterval(animate, 150);
+    intervalAnimation = setInterval(animate, 130);
     handleKeyEvent();
   }
 
