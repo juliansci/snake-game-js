@@ -10,8 +10,6 @@ function Snake(position) {
   this.direction = SNAKE_DIRECTIONS.RIGHT;
   this.isDead = false;
 
-
-
   this.move = board => {
     const snakeBody = this.body;
     for (let i = this.body.length - 1; i >= 0; i--) {
