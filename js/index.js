@@ -4,14 +4,21 @@ const startButton = document.getElementById('start');
 const menu = document.getElementById('menu');
 const boardGame = document.getElementById('boardGame');
 
+const showBoardGame = () => {
+    menu.style.display = 'none';
+    boardGame.style.display = 'block';
+}
+
+const showMenu = () => {
+    menu.style.display = 'block';
+    boardGame.style.display = 'none';
+}
+
 const onFinishGame = (snake) => {
-    console.log('onFinishGame: ', snake);
     const score = document.getElementById('score');
+    score.style.display = 'block';
     score.innerHTML = `Your score: ${snake.body.length * 100}`;
-    setTimeout(() => {
-        menu.style.display = 'block';
-        boardGame.style.display = 'none';
-    }, 3000);
+    setTimeout(showMenu, 3000);
 }
 
 startButton.addEventListener('click', () => {
@@ -21,8 +28,7 @@ startButton.addEventListener('click', () => {
     const dimensionValue = dimensionSelector && dimensionSelector.value;
     if (dimensionValue && speedValue) {
         const game = new Game(speedValue, dimensionValue);
-        menu.style.display = 'none';
-        boardGame.style.display = 'block';
+        showBoardGame();
         game.start(onFinishGame);
     }
 
