@@ -1,11 +1,70 @@
-html, body{
-  margin: 0;
+html,
+body {
+    margin: 0;
 }
 
-#container{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
+#container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+#boardGame {
+    display: none;
+}
+
+#menu {
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 10px;
+    box-shadow: 1px 1px 20px black;
+    padding: 40px;
+}
+
+#title {
+    font-size: 50px;
+    font-weight: bold;
+}
+
+#score{
+    font-size: 30px;
+    width: 165px;
+    text-align: center;
+    margin: 10px auto;
+    border: 1px dashed green;
+    padding: 10px;
+}
+
+#options {
+    font-size: 30px;
+}
+
+#optionsSpeed {
+    margin-bottom: 10px;
+}
+
+#optionsDimension {
+    margin-bottom: 10px;
+}
+
+#start {
+    background-color: #4CAF50;
+    /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 10px;
+    width: 300px;
+    cursor: pointer;
 }

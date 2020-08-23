@@ -6,7 +6,7 @@ const SNAKE_DIRECTIONS = {
 };
 
 function Drawer(board) {
-  this.canvas = document.getElementById('game');
+  this.canvas = document.getElementById('boardGame');
   this.ctx = this.canvas.getContext("2d");
   console.log()
   this.board = {

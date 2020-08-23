@@ -1,15 +1,36 @@
 <html>
 
 <head>
-  <title>Snake Game</title>
-  <link href="./css/styles.css" rel="stylesheet" />
+    <title>Snake Game</title>
+    <link href="./css/styles.css" rel="stylesheet" />
 </head>
 
 <body>
-  <div id="container">
-    <canvas id="game" width="800" height="800"></canvas>
-  </div>
-  <script src="./js/index.js" type="module"></script>
+    <div id="container">
+        <div id="menu">
+            <div id="title">
+                🐍🐍🐍 Snake Game 🐍🐍🐍
+            </div>
+            <div id="score"></div>
+            <div id="options">
+                <div id="optionsSpeed">
+                    <strong>Speed Snake</strong><br />
+                    <input type="radio" name="speed" value="slow"> Slow
+                    <input type="radio" name="speed" value="fast"> Fast
+                    <input type="radio" name="speed" value="hyperfast"> Hyper fast
+                </div>
+                <div id="optionsDimension">
+                    <strong>Dimension Map</strong><br />
+                    <input type="radio" name="dimension" value="small"> Small
+                    <input type="radio" name="dimension" value="medium"> Medium
+                    <input type="radio" name="dimension" value="big"> Big
+                </div>
+            </div>
+            <button id="start" type="button"> START </button>
+        </div>
+        <canvas id="boardGame" width="800" height="800"></canvas>
+    </div>
+    <script src="./js/index.js" type="module"></script>
 </body>
 
 </html>
